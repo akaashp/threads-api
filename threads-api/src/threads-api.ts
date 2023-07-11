@@ -363,9 +363,9 @@ export class ThreadsAPI {
 
   getPostIDfromURL = async (postURL: string, options?: AxiosRequestConfig): Promise<string | undefined> => {
     const res = await axios.get(postURL, {
+      ...options,
       httpAgent: this.httpAgent,
       httpsAgent: this.httpsAgent,
-      ...options,
     });
 
     let text: string = res.data;
@@ -397,13 +397,13 @@ export class ThreadsAPI {
         doc_id: '5587632691339264',
       }),
       {
+        ...options,
         httpAgent: this.httpAgent,
         httpsAgent: this.httpsAgent,
         headers: {
           ...this._getDefaultHeaders(),
           'x-fb-friendly-name': 'BarcelonaPostPageQuery',
         },
-        ...options,
       },
     );
     const thread = res.data.data.data;
