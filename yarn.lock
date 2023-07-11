@@ -5078,7 +5078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime-types@npm:^2.1.12, mime-types@npm:^2.1.35":
+"mime-types@npm:^2.1.12":
   version: 2.1.35
   resolution: "mime-types@npm:2.1.35"
   dependencies:
@@ -5226,7 +5226,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mrmime@npm:^1.0.0":
+"mrmime@npm:^1.0.0, mrmime@npm:^1.0.1":
   version: 1.0.1
   resolution: "mrmime@npm:1.0.1"
   checksum: cc979da44bbbffebaa8eaf7a45117e851f2d4cb46a3ada6ceb78130466a04c15a0de9a9ce1c8b8ba6f6e1b8618866b1352992bf1757d241c0ddca558b9f28a77
@@ -6708,7 +6708,7 @@ __metadata:
     commander: ^11.0.0
     dotenv: ^16.3.1
     jest: ^29.6.1
-    mime-types: ^2.1.35
+    mrmime: ^1.0.1
     rimraf: ^5.0.1
     ts-jest: ^29.1.1
     tslib: ^2.6.0
