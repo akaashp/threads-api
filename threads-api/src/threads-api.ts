@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import mimeTypes from 'mrmime';
-import { v4 as uuidV4 } from 'uuid';
+
 import {
   POST_URL,
   POST_WITH_IMAGE_URL,
@@ -533,72 +532,72 @@ export class ThreadsAPI {
     return token;
   };
 
-  publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<string | undefined> => {
-    const options: ThreadsAPIPublishOptions =
-      typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
-    if (!this.username || !this.password) {
-      throw new Error('Username or password not set');
-    }
+  // publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<string | undefined> => {
+  //   const options: ThreadsAPIPublishOptions =
+  //     typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
+  //   if (!this.username || !this.password) {
+  //     throw new Error('Username or password not set');
+  //   }
 
-    const userID = await this.getCurrentUserID();
-    if (!userID) {
-      throw new Error('User ID not found');
-    }
+  //   const userID = await this.getCurrentUserID();
+  //   if (!userID) {
+  //     throw new Error('User ID not found');
+  //   }
 
-    const token = await this.getToken();
-    if (!token) {
-      throw new Error('Token not found');
-    }
+  //   const token = await this.getToken();
+  //   if (!token) {
+  //     throw new Error('Token not found');
+  //   }
 
-    const now = new Date();
-    const timezoneOffset = -now.getTimezoneOffset() * 60;
+  //   const now = new Date();
+  //   const timezoneOffset = -now.getTimezoneOffset() * 60;
 
-    let data: any = {
-      text_post_app_info: { reply_control: 0 },
-      timezone_offset: timezoneOffset.toString(),
-      source_type: '4',
-      _uid: userID,
-      device_id: this.deviceID,
-      caption: options.text || '',
-      upload_id: now.getTime(),
-      device: this.device,
-    };
-    let url = POST_URL;
+  //   let data: any = {
+  //     text_post_app_info: { reply_control: 0 },
+  //     timezone_offset: timezoneOffset.toString(),
+  //     source_type: '4',
+  //     _uid: userID,
+  //     device_id: this.deviceID,
+  //     caption: options.text || '',
+  //     upload_id: now.getTime(),
+  //     device: this.device,
+  //   };
+  //   let url = POST_URL;
 
-    if ('image' in options && !!options.image) {
-      url = POST_WITH_IMAGE_URL;
-      const { upload_id: uploadId } = await this.uploadImage(options.image);
-      data.upload_id = uploadId;
-      data.scene_capture_type = '';
-    } else if ('url' in options && !!options.url) {
-      data.text_post_app_info.link_attachment_url = options.url;
-    }
+  //   if ('image' in options && !!options.image) {
+  //     url = POST_WITH_IMAGE_URL;
+  //     const { upload_id: uploadId } = await this.uploadImage(options.image);
+  //     data.upload_id = uploadId;
+  //     data.scene_capture_type = '';
+  //   } else if ('url' in options && !!options.url) {
+  //     data.text_post_app_info.link_attachment_url = options.url;
+  //   }
 
-    if (!!options.parentPostID) {
-      data.text_post_app_info.reply_id = options.parentPostID;
-    }
-    if (!(options as any).image) {
-      data.publish_mode = 'text_post';
-    }
+  //   if (!!options.parentPostID) {
+  //     data.text_post_app_info.reply_id = options.parentPostID;
+  //   }
+  //   if (!(options as any).image) {
+  //     data.publish_mode = 'text_post';
+  //   }
 
-    const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
-    const res = await axios.post(url, payload, {
-      httpAgent: this.httpAgent,
-      httpsAgent: this.httpsAgent,
-      headers: this._getAppHeaders(),
-      timeout: 60 * 1000,
-    });
+  //   const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
+  //   const res = await axios.post(url, payload, {
+  //     httpAgent: this.httpAgent,
+  //     httpsAgent: this.httpsAgent,
+  //     headers: this._getAppHeaders(),
+  //     timeout: 60 * 1000,
+  //   });
 
-    if (this.verbose) {
-      console.debug('[PUBLISH]', res.data);
-    }
+  //   if (this.verbose) {
+  //     console.debug('[PUBLISH]', res.data);
+  //   }
 
-    if (res.data['status'] === 'ok') {
-      return res.data['media']['id'];
-    }
+  //   if (res.data['status'] === 'ok') {
+  //     return res.data['media']['id'];
+  //   }
 
-    return undefined;
-  };
+  //   return undefined;
+  // };
 
   delete = async (postID: string, options?: AxiosRequestConfig): Promise<boolean> => {
     const url = `${BASE_API_URL}/media/${postID}/delete/`;
@@ -625,77 +624,77 @@ export class ThreadsAPI {
   /**
    * @deprecated: use `publish` instead
    **/
-  publishWithImage = async (caption: string, imagePath: string): Promise<string | undefined> => {
-    return this.publish({ text: caption, image: imagePath });
-  };
+  // publishWithImage = async (caption: string, imagePath: string): Promise<string | undefined> => {
+  //   return this.publish({ text: caption, image: imagePath });
+  // };
 
-  uploadImage = async (imagePath: string): Promise<InstagramImageUploadResponse> => {
-    const uploadId = Date.now().toString();
-    const name = `${uploadId}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
-    const url: string = `https://www.instagram.com/rupload_igphoto/${name}`;
+  // uploadImage = async (imagePath: string): Promise<InstagramImageUploadResponse> => {
+  //   const uploadId = Date.now().toString();
+  //   const name = `${uploadId}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
+  //   const url: string = `https://www.instagram.com/rupload_igphoto/${name}`;
 
-    let content: Buffer;
-    let mime_type: string | null;
+  //   let content: Buffer;
+  //   let mime_type: string | null;
 
-    const isFilePath = !imagePath.startsWith('http');
-    if (isFilePath) {
-      const fs = await import('fs');
-      content = await fs.promises.readFile(imagePath);
-      const mimeTypeResult = mimeTypes.lookup(imagePath);
-      mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
-    } else {
-      const response = await axios.get(imagePath, { responseType: 'arraybuffer' });
-      content = Buffer.from(response.data, 'binary');
-      mime_type = response.headers['content-type'];
-    }
+  //   const isFilePath = !imagePath.startsWith('http');
+  //   if (isFilePath) {
+  //     const fs = await import('fs');
+  //     content = await fs.promises.readFile(imagePath);
+  //     const mimeTypeResult = mimeTypes.lookup(imagePath);
+  //     mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
+  //   } else {
+  //     const response = await axios.get(imagePath, { responseType: 'arraybuffer' });
+  //     content = Buffer.from(response.data, 'binary');
+  //     mime_type = response.headers['content-type'];
+  //   }
 
-    const x_instagram_rupload_params = {
-      upload_id: uploadId,
-      media_type: '1',
-      sticker_burnin_params: JSON.stringify([]),
-      image_compression: JSON.stringify({ lib_name: 'moz', lib_version: '3.1.m', quality: '80' }),
-      xsharing_user_ids: JSON.stringify([]),
-      retry_context: JSON.stringify({
-        num_step_auto_retry: '0',
-        num_reupload: '0',
-        num_step_manual_retry: '0',
-      }),
-      'IG-FB-Xpost-entry-point-v2': 'feed',
-    };
+  //   const x_instagram_rupload_params = {
+  //     upload_id: uploadId,
+  //     media_type: '1',
+  //     sticker_burnin_params: JSON.stringify([]),
+  //     image_compression: JSON.stringify({ lib_name: 'moz', lib_version: '3.1.m', quality: '80' }),
+  //     xsharing_user_ids: JSON.stringify([]),
+  //     retry_context: JSON.stringify({
+  //       num_step_auto_retry: '0',
+  //       num_reupload: '0',
+  //       num_step_manual_retry: '0',
+  //     }),
+  //     'IG-FB-Xpost-entry-point-v2': 'feed',
+  //   };
 
-    const contentLength = content.length;
-    const imageHeaders: any = {
-      ...this._getDefaultHeaders(),
-      'Content-Type': 'application/octet-stream',
-      X_FB_PHOTO_WATERFALL_ID: uuidV4(),
-      'X-Entity-Type': mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
-      Offset: '0',
-      'X-Instagram-Rupload-Params': JSON.stringify(x_instagram_rupload_params),
-      'X-Entity-Name': name,
-      'X-Entity-Length': contentLength.toString(),
-      'Content-Length': contentLength.toString(),
-      'Accept-Encoding': 'gzip',
-    };
+  //   const contentLength = content.length;
+  //   const imageHeaders: any = {
+  //     ...this._getDefaultHeaders(),
+  //     'Content-Type': 'application/octet-stream',
+  //     X_FB_PHOTO_WATERFALL_ID: uuidV4(),
+  //     'X-Entity-Type': mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
+  //     Offset: '0',
+  //     'X-Instagram-Rupload-Params': JSON.stringify(x_instagram_rupload_params),
+  //     'X-Entity-Name': name,
+  //     'X-Entity-Length': contentLength.toString(),
+  //     'Content-Length': contentLength.toString(),
+  //     'Accept-Encoding': 'gzip',
+  //   };
 
-    if (this.verbose) {
-      console.log(`[UPLOAD_IMAGE] Uploading ${contentLength.toLocaleString()}b as ${uploadId}...`);
-    }
+  //   if (this.verbose) {
+  //     console.log(`[UPLOAD_IMAGE] Uploading ${contentLength.toLocaleString()}b as ${uploadId}...`);
+  //   }
 
-    try {
-      const { data } = await axios.post<InstagramImageUploadResponse>(url, content, {
-        httpAgent: this.httpAgent,
-        headers: imageHeaders,
-        timeout: 60 * 1000,
-      });
-      if (this.verbose) {
-        console.log(`[UPLOAD_IMAGE] SUCCESS`, data);
-      }
-      return data;
-    } catch (error: any) {
-      if (this.verbose) {
-        console.log(`[UPLOAD_IMAGE] FAILED`, error.response.data);
-      }
-      throw error;
-    }
-  };
+  //   try {
+  //     const { data } = await axios.post<InstagramImageUploadResponse>(url, content, {
+  //       httpAgent: this.httpAgent,
+  //       headers: imageHeaders,
+  //       timeout: 60 * 1000,
+  //     });
+  //     if (this.verbose) {
+  //       console.log(`[UPLOAD_IMAGE] SUCCESS`, data);
+  //     }
+  //     return data;
+  //   } catch (error: any) {
+  //     if (this.verbose) {
+  //       console.log(`[UPLOAD_IMAGE] FAILED`, error.response.data);
+  //     }
+  //     throw error;
+  //   }
+  // };
 }
